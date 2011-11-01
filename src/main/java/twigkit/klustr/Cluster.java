@@ -44,7 +44,7 @@ public class Cluster<T> {
 		throw new ResourcesModificationException();
 	}
 
-	public T next() {
+	public synchronized T next() {
 		return strategy.next();
 	}
 

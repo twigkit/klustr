@@ -23,6 +23,14 @@ package twigkit.klustr.strategy;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -30,19 +38,19 @@ import static org.junit.Assert.assertEquals;
  */
 public class RoundRobinTest {
 
-	@Test
-	public void testCreateCluster() throws Exception {
-		String s0 = "cluster_0";
-		String s1 = "cluster_1";
-		String s2 = "cluster_2";
+    @Test
+    public void testCreateCluster() throws Exception {
+        String s0 = "cluster_0";
+        String s1 = "cluster_1";
+        String s2 = "cluster_2";
 
-		Strategy<String> strategy = new RoundRobin<String>();
-		strategy.setResources(s0, s1, s2);
+        Strategy<String> strategy = new RoundRobin<String>();
+        strategy.setResources(s0, s1, s2);
 
-		for (int i = 0; i < 2; i++) {
-			assertEquals(s0, strategy.next());
-			assertEquals(s1, strategy.next());
-			assertEquals(s2, strategy.next());
-		}
-	}
+        for (int i = 0; i < 2; i++) {
+            assertEquals(s0, strategy.next());
+            assertEquals(s1, strategy.next());
+            assertEquals(s2, strategy.next());
+        }
+    }
 }

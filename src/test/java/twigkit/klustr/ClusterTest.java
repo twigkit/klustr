@@ -21,8 +21,19 @@
  */
 package twigkit.klustr;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import twigkit.klustr.Cluster;
+import twigkit.klustr.strategy.RoundRobin;
+import twigkit.klustr.strategy.Strategy;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
 
@@ -31,36 +42,63 @@ import static org.junit.Assert.assertEquals;
  */
 public class ClusterTest {
 
-	@Test
-	public void testNext() throws Exception {
-		String s0 = "cluster_0";
-		String s1 = "cluster_1";
-		String s2 = "cluster_2";
+    @Test
+    public void testNext() throws Exception {
+        String s0 = "cluster_0";
+        String s1 = "cluster_1";
+        String s2 = "cluster_2";
 
-		Cluster<String> cluster = new Cluster<String>(s0, s1, s2);
+        Cluster<String> cluster = new Cluster<String>(s0, s1, s2);
 
-		for (int i = 0; i < 2; i++) {
-			assertEquals(s0, cluster.next());
-			assertEquals(s1, cluster.next());
-			assertEquals(s2, cluster.next());
-		}
-	}
+        for (int i = 0; i < 2; i++) {
+            assertEquals(s0, cluster.next());
+            assertEquals(s1, cluster.next());
+            assertEquals(s2, cluster.next());
+        }
+    }
 
-	@Test
-	public void testReset() throws Exception {
-		String s0 = "cluster_0";
-		String s1 = "cluster_1";
-		String s2 = "cluster_2";
+    @Test
+    public void testReset() throws Exception {
+        String s0 = "cluster_0";
+        String s1 = "cluster_1";
+        String s2 = "cluster_2";
 
-		Cluster<String> cluster = new Cluster<String>(s0, s1, s2);
+        Cluster<String> cluster = new Cluster<String>(s0, s1, s2);
 
-		assertEquals(s0, cluster.next());
-		assertEquals(s1, cluster.next());
+        assertEquals(s0, cluster.next());
+        assertEquals(s1, cluster.next());
 
-		cluster.reset();
+        cluster.reset();
 
-		assertEquals(s0, cluster.next());
-		assertEquals(s1, cluster.next());
-		assertEquals(s2, cluster.next());
-	}
+        assertEquals(s0, cluster.next());
+        assertEquals(s1, cluster.next());
+        assertEquals(s2, cluster.next());
+    }
+
+    @Test
+    public void testMultithreaded() throws Exception {
+        for (int p = 0; p < 50; p++) {
+            String s0 = "cluster_0";
+            String s1 = "cluster_1";
+            String s2 = "cluster_2";
+
+            final Cluster<String> cluster = new Cluster<String>(s0, s1, s2);
+
+            Collection<Callable<String>> tasks = new ArrayList<Callable<String>>();
+            for (int i = 0; i < 10000; i++) {
+                tasks.add(new Callable<String>() {
+                    public String call() throws Exception {
+                        return cluster.next();
+                    }
+                });
+            }
+
+            ExecutorService executorService = Executors.newFixedThreadPool(10);
+            List<Future<String>> futures = executorService.invokeAll(tasks);
+            assertEquals(10000, futures.size());
+            for (Future<String> f : futures) {
+                f.get();
+            }
+        }
+    }
 }
