@@ -32,15 +32,20 @@ public class Single<T> implements Strategy<T> {
     public void setResources(T... resources) throws ResourcesModificationException {
         if (resources.length == 1) {
             this.resource = resources[0];
+        } else {
+            logger.error("Expecting 1 resource, got " + resources.length);
         }
-        logger.error("Expecting 1 resource, got " + resources.length);
     }
 
     public T next() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Using resource " + resource.getClass().getName() + "[" + resource + "]");
+        if (resource != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Using resource " + resource.getClass().getName() + "[" + resource + "]");
+            }
+            return resource;
         }
-        return resource;
+        logger.error("No resource configured");
+        return null;
     }
 
     public void reset() {
