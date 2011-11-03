@@ -25,7 +25,7 @@ import twigkit.klustr.ResourcesModificationException;
  */
 public class Single<T> implements Strategy<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(RoundRobin.class);
+    private static final Logger logger = LoggerFactory.getLogger(Single.class);
 
     private T resource;
 
