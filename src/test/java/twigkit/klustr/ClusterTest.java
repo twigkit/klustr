@@ -99,6 +99,7 @@ public class ClusterTest {
             for (Future<String> f : futures) {
                 f.get();
             }
+            executorService.shutdown();
         }
     }
 }
