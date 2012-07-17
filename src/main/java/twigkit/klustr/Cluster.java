@@ -16,6 +16,8 @@
  */
 package twigkit.klustr;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import twigkit.klustr.strategy.RoundRobin;
 import twigkit.klustr.strategy.Strategy;
 
@@ -24,6 +26,8 @@ import twigkit.klustr.strategy.Strategy;
  * 
  */
 public class Cluster<T> {
+
+    private static final Logger logger = LoggerFactory.getLogger(Cluster.class);
 
 	private final Strategy<T> strategy;
 
@@ -36,7 +40,7 @@ public class Cluster<T> {
 		try {
 			strategy.setResources(resources);
 		} catch (ResourcesModificationException e) {
-			e.printStackTrace();
+			logger.error("Failed to set Strategy", e);
 		}
 	}
 
